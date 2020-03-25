@@ -1,4 +1,4 @@
 package AzurLane.actions.utility;
 
-public class azur_centralmenu {
+public class al_skinmenuAction {
 }

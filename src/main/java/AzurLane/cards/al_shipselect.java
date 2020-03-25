@@ -2,36 +2,32 @@ package AzurLane.cards;
 
 import AzurLane.AzurLane;
 
-import AzurLane.actions.utility.azur_pickmenu;
+import AzurLane.relics.project_azure;
 import basemod.AutoAdd;
 
-import com.badlogic.gdx.Gdx;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
+import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import static AzurLane.AzurLane.*;
 
 @AutoAdd.Ignore
-public class al_ship extends abs_al {
+public class al_shipselect extends abs_al_core {
 
-    public static final String ID = AzurLane.makeID(al_ship.class.getSimpleName());
+    public static final String ID = AzurLane.makeID(al_shipselect.class.getSimpleName());
     public static final String IMG = makeCardPath("null.png");
     private static final CardRarity RARITY = CardRarity.SPECIAL;
     private static final CardTarget TARGET = CardTarget.NONE;
     private static final CardType TYPE = CardType.POWER;
     public static final CardColor COLOR = CardColor.COLORLESS;
     public String Ship;
-    public static final Logger logger = LogManager.getLogger(al_ship.class.getName());
+    public static final Logger logger = LogManager.getLogger(al_shipselect.class.getName());
 
 
-    public al_ship(String index, String name, String desc) {
+    public al_shipselect(String index, String name, String desc) {
         super(ID, IMG, -2, TYPE, COLOR, RARITY, TARGET);
         Ship = index;
         this.name = name;
@@ -46,7 +42,7 @@ public class al_ship extends abs_al {
     @Override
     public float getTitleFontSize()
     {
-        return 16;
+        return 12;
     }
 
     @Override
@@ -62,6 +58,7 @@ public class al_ship extends abs_al {
         {
             e.printStackTrace();
         }
+        AbstractDungeon.getCurrRoom().spawnRelicAndObtain((Settings.WIDTH / 2), (Settings.HEIGHT / 2), new project_azure());
 
     }
 

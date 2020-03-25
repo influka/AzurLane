@@ -1,10 +1,9 @@
 package AzurLane.actions.utility;
 
 import AzurLane.AzurLane;
-import AzurLane.cards.al_ship;
+import AzurLane.cards.al_shipselect;
 import com.badlogic.gdx.Gdx;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
-import com.megacrit.cardcrawl.actions.watcher.ChooseOneAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.CardGroup;
 import com.megacrit.cardcrawl.cards.CardQueueItem;
@@ -14,28 +13,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static AzurLane.AzurLane.getModID;
-import static AzurLane.AzurLane.makeCardPath;
 import static com.megacrit.cardcrawl.events.city.TheLibrary.OPTIONS;
 
-public class azur_pickmenu extends AbstractGameAction {
+public class al_shipselectAction extends AbstractGameAction {
 
-    public static final Logger logger = LogManager.getLogger(azur_pickmenu.class.getName());
+    public static final Logger logger = LogManager.getLogger(al_shipselectAction.class.getName());
     //public ArrayList<AbstractCard> stanceChoices = new ArrayList<>();
     public CardGroup group = new CardGroup(CardGroup.CardGroupType.UNSPECIFIED);
     public boolean once = true;
 
     // indexing
 
-    public azur_pickmenu() {
+    public al_shipselectAction() {
         this.actionType = ActionType.WAIT;
         this.duration = Settings.ACTION_DUR_FAST;
     }
@@ -67,7 +58,7 @@ public class azur_pickmenu extends AbstractGameAction {
 
             try {
                 while ((current_sg_index = sg_indexes.readLine()) != null && (current_sg_name = sg_names.readLine()) != null && (current_sg_desc = sg_descs.readLine()) != null) {
-                    AbstractCard c = new al_ship(current_sg_index, current_sg_name, current_sg_desc);
+                    AbstractCard c = new al_shipselect(current_sg_index, current_sg_name, current_sg_desc);
                     group.addToTop(c);
                 }
             } catch (Exception e) {

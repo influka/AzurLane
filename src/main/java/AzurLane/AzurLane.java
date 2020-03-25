@@ -1,6 +1,6 @@
 package AzurLane;
 
-import AzurLane.actions.utility.azur_pickmenu;
+import AzurLane.actions.utility.al_shipselectAction;
 import AzurLane.relics.*;
 
 import basemod.*;
@@ -352,7 +352,10 @@ public class AzurLane implements
 
     public void receiveOnBattleStart(AbstractRoom room) {
         if(ship_curr == "null"){
-            AbstractDungeon.actionManager.addToBottom(new azur_pickmenu());
+            AbstractDungeon.actionManager.addToBottom(new al_shipselectAction());
+        }
+        else{
+            AbstractDungeon.getCurrRoom().spawnRelicAndObtain((Settings.WIDTH / 2), (Settings.HEIGHT / 2), new project_azure());
         }
 
     }
