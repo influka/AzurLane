@@ -1,5 +1,6 @@
 package AzurLane;
 
+import AzurLane.actions.utility.azur_pickmenu;
 import AzurLane.relics.*;
 
 import basemod.*;
@@ -59,18 +60,17 @@ public class AzurLane implements
     public static int ship_affinity = 0;
     public static boolean ship_oath = false;
 
-    public static boolean[] ship_skins = new boolean[]{};
-    public static String ship_currskin = "default";
-
     public static int ship_gold = 0;
     public static float ship_interest = 0;
+
+    public static boolean[] ship_skins = new boolean[]{};
+    public static String ship_currskin = "default";
 
     public static Properties AzurLaneDefaultSettings = new Properties();
 
     private static final String MODNAME = "Project Azur";
     private static final String AUTHOR = "squeeny";
     private static final String DESCRIPTION = "Your own personal shipgirl, please take good care of her!";
-
     public static final String BADGE_IMAGE = "AzurLaneResources/images/Badge.png";
 
     public static String makeCardPath(String resourcePath) {
@@ -270,27 +270,59 @@ public class AzurLane implements
         logger.info("Done adding cards!");
     }
 
+    public static String fetchLanguage()
+    {
+        return Settings.language.name().toLowerCase();
+    }
+
     @Override
     public void receiveEditStrings() {
 
         logger.info("Beginning to edit strings for mod with ID: " + getModID());
 
-        BaseMod.loadCustomStringsFile(CardStrings.class,
-                getModID() + "Resources/localization/eng/AzurLane-Card-Strings.json");
+        String language = fetchLanguage();
 
-        BaseMod.loadCustomStringsFile(PowerStrings.class,
-                getModID() + "Resources/localization/eng/AzurLane-Power-Strings.json");
+        try
+        {
+            BaseMod.loadCustomStringsFile(CardStrings.class,
+                    getModID() + "Resources/localization/" + language + "/AzurLane-Card-Strings.json");
 
-        BaseMod.loadCustomStringsFile(RelicStrings.class,
-                getModID() + "Resources/localization/eng/AzurLane-Relic-Strings.json");
+            BaseMod.loadCustomStringsFile(PowerStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Power-Strings.json");
 
-        BaseMod.loadCustomStringsFile(EventStrings.class,
-                getModID() + "Resources/localization/eng/AzurLane-Event-Strings.json");
+            BaseMod.loadCustomStringsFile(RelicStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Relic-Strings.json");
 
-        BaseMod.loadCustomStringsFile(UIStrings.class,
-                getModID() + "Resources/localization/eng/AzurLane-Ui-Strings.json");
+            BaseMod.loadCustomStringsFile(EventStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Event-Strings.json");
 
-        logger.info("Strings are done.");
+            BaseMod.loadCustomStringsFile(UIStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Ui-Strings.json");
+        }
+        catch (Exception e)
+        {
+            logger.info("[AL] Couldn't find localization for language:" + language);
+            language = "eng";
+            logger.info("[AL] Defaulting to eng");
+
+            BaseMod.loadCustomStringsFile(CardStrings.class,
+                    getModID() + "Resources/localization/" + language + "/AzurLane-Card-Strings.json");
+
+            BaseMod.loadCustomStringsFile(PowerStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Power-Strings.json");
+
+            BaseMod.loadCustomStringsFile(RelicStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Relic-Strings.json");
+
+            BaseMod.loadCustomStringsFile(EventStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Event-Strings.json");
+
+            BaseMod.loadCustomStringsFile(UIStrings.class,
+                    getModID() + "Resources/localization/"  + language + "/AzurLane-Ui-Strings.json");
+
+        }
+
+        logger.info("[AL] Strings are done.");
     }
 
     @Override
@@ -319,8 +351,8 @@ public class AzurLane implements
 
 
     public void receiveOnBattleStart(AbstractRoom room) {
-        if(!AbstractDungeon.player.hasRelic(project_azure.ID)){
-            AbstractDungeon.getCurrRoom().spawnRelicAndObtain((Settings.WIDTH / 2), (Settings.HEIGHT / 2), new project_azure());
+        if(ship_curr == "null"){
+            AbstractDungeon.actionManager.addToBottom(new azur_pickmenu());
         }
 
     }
@@ -375,6 +407,84 @@ public class AzurLane implements
         logger.info("[AL] Done!");
     }
 
+    public static void resetData() throws IOException {
+        logger.info("[AL] resetting data.... ");
+
+        try {
+
+            int i;
+            int j;
+
+            logger.info("Setting default values.");
+
+            AzurLaneDefaultSettings.setProperty("ship_curr", "none");
+            AzurLaneDefaultSettings.setProperty("ship_locked", "false");
+            AzurLaneDefaultSettings.setProperty("ship_module", "none");
+
+            for (i = 0; i < ship_skill.length; i++) {
+                AzurLaneDefaultSettings.setProperty("ship_skill" + i, "false");
+            }
+            for (i = 0; i < ship_skill_levels.length; i++) {
+                AzurLaneDefaultSettings.setProperty("ship_skill_levels" + i, "0");
+            }
+
+            AzurLaneDefaultSettings.setProperty("ship_affinity", "0");
+            AzurLaneDefaultSettings.setProperty("ship_oath", "false");
+
+            AzurLaneDefaultSettings.setProperty("ship_gold", "0");
+            AzurLaneDefaultSettings.setProperty("ship_interest", "0.0");
+
+            try{
+                for (i = 0; i < ship_skins.length; i++) {
+                    AzurLaneDefaultSettings.setProperty("ship_skins" + i, "false");
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            AzurLaneDefaultSettings.setProperty("ship_currskin", "default");
+
+            SpireConfig config = new SpireConfig("azurlane", "AzurLaneConfig", AzurLaneDefaultSettings);
+
+            ship_curr = config.getString("ship_curr");
+            ship_locked = config.getBool("ship_locked");
+            ship_module = config.getString("ship_module");
+
+            for (j = 0; j < ship_skill.length; j++) {
+                ship_skill[j] = config.getBool("ship_skill" + j);
+            }
+            for (j = 0; j < ship_skill_levels.length; j++) {
+                ship_skill_levels[j] = config.getInt("ship_skill_levels" + j);
+            }
+
+            ship_affinity = config.getInt("ship_affinity");
+            ship_oath = config.getBool("ship_oath");
+
+            ship_gold = config.getInt("ship_gold");
+            ship_interest = config.getFloat("ship_interest");
+
+            try{
+                for (j = 0; j < ship_skins.length; j++) {
+                    ship_skins[j] = config.getBool("ship_skins" + j);
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            ship_currskin = config.getString("ship_currskin");
+
+            logger.info("[AL] Done!");
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     @Override
     public void receiveStartAct() {

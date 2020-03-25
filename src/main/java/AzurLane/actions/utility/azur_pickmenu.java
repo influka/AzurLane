@@ -6,43 +6,92 @@ import com.badlogic.gdx.Gdx;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
 import com.megacrit.cardcrawl.actions.watcher.ChooseOneAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.cards.CardGroup;
+import com.megacrit.cardcrawl.cards.CardQueueItem;
+import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static AzurLane.AzurLane.getModID;
 import static AzurLane.AzurLane.makeCardPath;
+import static com.megacrit.cardcrawl.events.city.TheLibrary.OPTIONS;
 
 public class azur_pickmenu extends AbstractGameAction {
 
-    public ArrayList<AbstractCard> stanceChoices = new ArrayList<>();
+    public static final Logger logger = LogManager.getLogger(azur_pickmenu.class.getName());
+    //public ArrayList<AbstractCard> stanceChoices = new ArrayList<>();
+    public CardGroup group = new CardGroup(CardGroup.CardGroupType.UNSPECIFIED);
+    public boolean once = true;
+
+    // indexing
 
     public azur_pickmenu() {
         this.actionType = ActionType.WAIT;
+        this.duration = Settings.ACTION_DUR_FAST;
     }
+
 
     public void update() {
 
-        File uri = null;
-        String current_shipgirl;
-        uri = Gdx.files.internal("/AzurLaneResources/images/cards/shipgirls.txt").file();
+        if (once) {
+            String current_sg_index = "";
+            String current_sg_name = "";
+            String current_sg_desc = "";
+            String language = AzurLane.fetchLanguage();
 
-        try {
-            BufferedReader shipgirlscanner = new BufferedReader(new FileReader(uri));
-            while((current_shipgirl = shipgirlscanner.readLine()) != null){
-                stanceChoices.add(new al_ship(current_shipgirl));
+            BufferedReader sg_indexes;
+            BufferedReader sg_names;
+            BufferedReader sg_descs;
+
+            sg_indexes = new BufferedReader(Gdx.files.internal(getModID() + "Resources/localization/uni/sgindex.txt").reader());
+            try {
+                sg_names = new BufferedReader(Gdx.files.internal(getModID() + "Resources/localization/" + language + "/sgname.txt").reader());
+                sg_descs = new BufferedReader(Gdx.files.internal(getModID() + "Resources/localization/" + language + "/sgdesc.txt").reader());
+            } catch (Exception e) {
+                logger.info("[AL] Couldn't find localization [Ship Files] for language:" + language);
+                language = "eng";
+                logger.info("[AL] Defaulting to eng");
+                sg_names = new BufferedReader(Gdx.files.internal(getModID() + "Resources/localization/" + language + "/sgname.txt").reader());
+                sg_descs = new BufferedReader(Gdx.files.internal(getModID() + "Resources/localization/" + language + "/sgdesc.txt").reader());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            try {
+                while ((current_sg_index = sg_indexes.readLine()) != null && (current_sg_name = sg_names.readLine()) != null && (current_sg_desc = sg_descs.readLine()) != null) {
+                    AbstractCard c = new al_ship(current_sg_index, current_sg_name, current_sg_desc);
+                    group.addToTop(c);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            AbstractDungeon.gridSelectScreen.open(group, 1, OPTIONS[4], false);
+            once = false;
         }
 
-        addToTop(new ChooseOneAction(stanceChoices));
 
-        this.isDone = true;
+        if (AbstractDungeon.gridSelectScreen.selectedCards.size() != 0) {
+            for (AbstractCard c : AbstractDungeon.gridSelectScreen.selectedCards) {
+
+                c.freeToPlayOnce = true;
+                c.purgeOnUse = true;
+                AbstractDungeon.actionManager.cardQueue.add(new CardQueueItem(c, null));
+            }
+
+            this.isDone = true;
+
+        }
+
+        tickDuration();
     }
 
 

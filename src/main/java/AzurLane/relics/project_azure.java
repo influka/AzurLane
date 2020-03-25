@@ -22,7 +22,7 @@ public class project_azure extends CustomRelic implements ClickableRelic {
     private static final Texture OUTLINE = TextureLoader.getTexture(makeRelicOutlinePath("project_azure.png"));
 
     public project_azure() {
-        super(ID, IMG, OUTLINE, RelicTier.BOSS, LandingSound.MAGICAL);
+        super(ID, IMG, OUTLINE, RelicTier.SPECIAL, LandingSound.MAGICAL);
     }
 
     private boolean used = false;
@@ -50,10 +50,70 @@ public class project_azure extends CustomRelic implements ClickableRelic {
 
     @Override
     public void onEquip() {
-        addToBot(new azur_pickmenu());
+        switch (ship_curr){
 
-        //this.img = TextureLoader.getTexture(AzurLane.makeRelicPath(ship_curr + ship_currskin + ".png"));
+            case "null":
+                break;
 
+            default: {
+
+                switch (ship_currskin){
+
+                    case "default":
+                        this.img = TextureLoader.getTexture(AzurLane.makeRelicPath(ship_curr + ".png"));
+                        this.outlineImg = TextureLoader.getTexture(AzurLane.makeRelicPath(ship_curr + ".png"));
+                        break;
+
+                    case "Retrofit":
+                        break;
+
+                    case "Oath":
+                        break;
+
+                    case "Halloween":
+                        break;
+
+                    case "Christmas":
+                        break;
+
+                    case "NewYear":
+                        break;
+
+                    case "Spring":
+                        break;
+
+                    case "Summer":
+                        break;
+
+                    case "Event":
+                        break;
+
+                    case "Event2":
+                        break;
+
+                    case "School":
+                        break;
+
+                    case "Party":
+                        break;
+
+                    case "Idol":
+                        break;
+
+                    case "Casual":
+                        break;
+
+                    case "Coco":
+                        break;
+
+                    case "NicoNico":
+                        break;
+
+                }
+
+            }
+
+        }
 
 
     }
