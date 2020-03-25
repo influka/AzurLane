@@ -351,11 +351,11 @@ public class AzurLane implements
 
 
     public void receiveOnBattleStart(AbstractRoom room) {
-        if(ship_curr == "null"){
+        if(ship_curr == "none"){
             AbstractDungeon.actionManager.addToBottom(new al_shipselectAction());
         }
         else{
-            AbstractDungeon.getCurrRoom().spawnRelicAndObtain((Settings.WIDTH / 2), (Settings.HEIGHT / 2), new project_azure());
+            AbstractDungeon.getCurrRoom().spawnRelicAndObtain((Settings.WIDTH / 2), (Settings.HEIGHT / 2), new project_azure(ship_curr));
         }
 
     }

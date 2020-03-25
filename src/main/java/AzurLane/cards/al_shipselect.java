@@ -32,6 +32,7 @@ public class al_shipselect extends abs_al_core {
         Ship = index;
         this.name = name;
         this.rawDescription = desc;
+        this.getTitleFontSize();
         logger.info(index);
         loadCardImage("AzurLaneResources/images/cards/" + index + ".png");
         initializeDescription();
@@ -58,7 +59,7 @@ public class al_shipselect extends abs_al_core {
         {
             e.printStackTrace();
         }
-        AbstractDungeon.getCurrRoom().spawnRelicAndObtain((Settings.WIDTH / 2), (Settings.HEIGHT / 2), new project_azure());
+        AbstractDungeon.getCurrRoom().spawnRelicAndObtain((Settings.WIDTH / 2), (Settings.HEIGHT / 2), new project_azure(ship_curr));
 
     }
 

@@ -1,5 +1,6 @@
 package AzurLane.relics;
 
+import AzurLane.cards.al_shipselect;
 import basemod.abstracts.CustomRelic;
 import com.badlogic.gdx.graphics.Texture;
 import com.evacipated.cardcrawl.mod.stslib.actions.common.StunMonsterAction;
@@ -10,28 +11,29 @@ import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import AzurLane.AzurLane;
 import AzurLane.util.TextureLoader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static AzurLane.AzurLane.*;
 
 public class project_azure extends CustomRelic implements ClickableRelic {
 
     public static final String ID = AzurLane.makeID(project_azure.class.getSimpleName());
-    private static final Texture IMG = TextureLoader.getTexture(makeRelicPath("project_azure.png"));
-    private static final Texture OUTLINE = TextureLoader.getTexture(makeRelicOutlinePath("project_azure.png"));
+    public static Texture IMG = TextureLoader.getTexture(makeRelicPath("null.png"));
+    public static Texture OUTLINE = TextureLoader.getTexture(makeRelicOutlinePath("null.png"));
+    public static final Logger logger = LogManager.getLogger(al_shipselect.class.getName());
 
-    public project_azure() {
-        super(ID, IMG, OUTLINE, RelicTier.SPECIAL, LandingSound.MAGICAL);
+
+    public project_azure(String ship_curr) {
+        super(ID, fetchShipGirl(true, ship_curr), fetchShipGirl(false, ship_curr), RelicTier.SPECIAL, LandingSound.MAGICAL);
     }
 
-    private boolean used = false;
-    private boolean isPlayerTurn = false;
+    public project_azure() {
+        super(ID, IMG, OUTLINE, RelicTier.DEPRECATED, LandingSound.MAGICAL);
+    }
 
     @Override
     public void onRightClick() {
-
-        if (this.counter == -2) {
-            return; // Don't do anything.
-        }
 
         if (AbstractDungeon.getCurrRoom() != null && AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMBAT) {
 
@@ -46,85 +48,45 @@ public class project_azure extends CustomRelic implements ClickableRelic {
 
     }
 
-    @Override
-    public void onEquip() {
-        switch (ship_curr){
+    public static Texture fetchShipGirl(boolean relic_or_outline, String ship_curr){
 
-            case "null":
-                break;
+        switch (ship_curr) {
+
+            case "none":
+
+                AzurLane.logger.info("AL : Null texture");
+                if (relic_or_outline) { return TextureLoader.getTexture(makeRelicPath("null.png"));
+                } else { return TextureLoader.getTexture(makeRelicOutlinePath("null.png")); }
 
             default: {
 
-                switch (ship_currskin){
+                switch (ship_currskin) {
 
                     case "default":
-                        this.img = TextureLoader.getTexture(AzurLane.makeRelicPath(ship_curr + ".png"));
-                        this.outlineImg = TextureLoader.getTexture(AzurLane.makeRelicPath(ship_curr + ".png"));
-                        break;
 
-                    case "Retrofit":
-                        break;
+                        if (relic_or_outline) {
+                            return TextureLoader.getTexture(makeRelicPath(ship_curr + ".png"));
+                        } else {
+                            return TextureLoader.getTexture(makeRelicOutlinePath(ship_curr + ".png"));
+                        }
 
-                    case "Oath":
-                        break;
-
-                    case "Halloween":
-                        break;
-
-                    case "Christmas":
-                        break;
-
-                    case "NewYear":
-                        break;
-
-                    case "Spring":
-                        break;
-
-                    case "Summer":
-                        break;
-
-                    case "Event":
-                        break;
-
-                    case "Event2":
-                        break;
-
-                    case "School":
-                        break;
-
-                    case "Party":
-                        break;
-
-                    case "Idol":
-                        break;
-
-                    case "Casual":
-                        break;
-
-                    case "Coco":
-                        break;
-
-                    case "NicoNico":
-                        break;
+                    default:
+                        if (relic_or_outline) {
+                            return TextureLoader.getTexture(makeRelicPath(ship_curr + ship_currskin + ".png"));
+                        } else {
+                            return TextureLoader.getTexture(makeRelicOutlinePath(ship_curr + ship_currskin + ".png"));
+                        }
 
                 }
 
             }
-
-        }
-
-
-    }
-    public void setCounter(int setCounter) {
-
-        if (setCounter == -2) {
-
-            usedUp();
-            this.counter = -2;
         }
     }
 
+    @Override
+    public void onEquip() {
 
+    }
 
     @Override
     public String getUpdatedDescription() {
